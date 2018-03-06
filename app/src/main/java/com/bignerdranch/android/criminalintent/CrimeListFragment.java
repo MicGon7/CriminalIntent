@@ -12,8 +12,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by michaelgonzalez on 2/27/18.
@@ -23,6 +26,8 @@ public class CrimeListFragment extends Fragment {
 
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
+    private int itemPosition;
+
 
     @Nullable
     @Override
@@ -33,23 +38,43 @@ public class CrimeListFragment extends Fragment {
         mCrimeRecyclerView = view.findViewById(R.id.crime_recycler_view);
 
         // LayoutManager is required or Recycler view will crash.
-        // This will get the current activity which should be CrimeListFragment.
+        // This will get the current activity which should be CrimeListActivity.
         mCrimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
 
         updateUI();
 
         return view;
     }
 
+    // Reloading the list in onResume()
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
+    // Create adapter and pass in list of crimes.
     private void updateUI() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
 
-        mAdapter = new CrimeAdapter(crimes);
-        mCrimeRecyclerView.setAdapter(mAdapter);
+
+        // call notifyDataSetChange() if the CrimeAdapter is already set up.
+        if (mAdapter == null) {
+            mAdapter = new CrimeAdapter(crimes);
+            mCrimeRecyclerView.setAdapter(mAdapter);
+        } else {
+
+            // inefficient - reloads all items.
+            // mAdapter.notifyDataSetChanged();
+
+            // efficient - reloads a single item.
+            mAdapter.notifyItemChanged(itemPosition);
+        }
     }
 
-    // ViewHolder - holds on to a view
+    // ViewHolder - holds on to a view - similar to UMG/VRFAT recipe rows.
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mTitleTextView;
         private TextView mDateTextView;
@@ -65,6 +90,7 @@ public class CrimeListFragment extends Fragment {
             mSolvedImageView = itemView.findViewById(R.id.crime_solved);
 
         }
+
         //Called in OnBindViewHolder
         private void bind(Crime crime) {
             mCrime = crime;
@@ -77,13 +103,18 @@ public class CrimeListFragment extends Fragment {
             mSolvedImageView.setVisibility(crime.isSolved() ? View.VISIBLE : View.GONE);
         }
 
-        // Stash crime ID in the intent that belongs to CrimeActivity.
+        // Stashing and passing a Crime id to CrimeActivity
 
         @Override
-        public void onClick(View view){
+        public void onClick(View view) {
             Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
+
+            itemPosition = getAdapterPosition();
+
             startActivity(intent);
         }
+
+
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
@@ -118,5 +149,7 @@ public class CrimeListFragment extends Fragment {
         public int getItemViewType(int position) {
             return super.getItemViewType(position);
         }
+
+
     }
 }
