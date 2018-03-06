@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -19,10 +18,12 @@ import java.util.List;
  * Created by michaelgonzalez on 2/27/18.
  */
 
+
 public class CrimeListFragment extends Fragment {
 
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
+    private int testChallenge9;
 
     @Nullable
     @Override
