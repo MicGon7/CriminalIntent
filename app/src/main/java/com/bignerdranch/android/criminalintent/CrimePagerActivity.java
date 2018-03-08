@@ -12,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -31,6 +30,9 @@ public class CrimePagerActivity extends AppCompatActivity {
     private Button mFirstCrimeButton;
     private Button mLastCrimeButton;
     private int currentItemPosition;
+
+    //TODO Add enum for first and last button.
+    //enum ButtonTypes {FIRST, LAST};
 
 
     public static Intent newIntent(Context packageContext, UUID crimeId) {
@@ -77,7 +79,6 @@ public class CrimePagerActivity extends AppCompatActivity {
                 Crime crime = mCrimes.get(position);
                 currentItemPosition = position;
 
-
                 return CrimeFragment.newInstance(crime.getId());
             }
 
@@ -106,7 +107,6 @@ public class CrimePagerActivity extends AppCompatActivity {
 
             }
         });
-
 
         mFirstCrimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,14 +140,13 @@ public class CrimePagerActivity extends AppCompatActivity {
     }
 
     private void handleButtonAccess() {
-        if(currentItemPosition  != 0 || currentItemPosition != 100) {
-            mFirstCrimeButton.setEnabled(true);
-            mLastCrimeButton.setEnabled(true);
-        }
         if (currentItemPosition == 0) {
             mFirstCrimeButton.setEnabled(false);
         } else if (currentItemPosition == 100) {
             mLastCrimeButton.setEnabled(false);
+        } else {
+            mFirstCrimeButton.setEnabled(true);
+            mLastCrimeButton.setEnabled(true);
         }
     }
 }

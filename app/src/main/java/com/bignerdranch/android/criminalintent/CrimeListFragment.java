@@ -97,7 +97,7 @@ public class CrimeListFragment extends Fragment {
             mCrime = crime;
 
             // Challenge 9: Format date.
-            SimpleDateFormat sdf = new SimpleDateFormat("EEEE, MMM, dd, yyyy");
+            SimpleDateFormat sdf = new SimpleDateFormat("EEEE MM/dd/yyyy h:mm a");
 
             mTitleTextView.setText(mCrime.getTitle());
             mDateTextView.setText(sdf.format(mCrime.getDate()));
