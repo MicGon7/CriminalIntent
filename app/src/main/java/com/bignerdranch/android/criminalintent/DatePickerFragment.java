@@ -24,9 +24,8 @@ import java.util.GregorianCalendar;
 public class DatePickerFragment extends DialogFragment {
 
     public static final String EXTRA_DATE = "com.bignerdranch.android.criminalintent.date";
-
-    // newInstance() method replaces fragment constructor.
     public static final String ARG_DATE = "date";
+
     private DatePicker mDatePicker;
 
     public static DatePickerFragment newInstance(Date date) {
@@ -74,7 +73,7 @@ public class DatePickerFragment extends DialogFragment {
 
     }
 
-    // Sending data to the target fragment.
+    // Sending data to the target(CrimeFragment fragment.
     private void sendResult(int resultCode, Date date) {
         if(getTargetFragment() == null) {
             return;

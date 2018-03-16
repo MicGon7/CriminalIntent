@@ -24,10 +24,11 @@
         android:text="@string/crime_details_label" />
 
     <Button
-        android:id="@+id/crime_date"
+        android:id="@+id/button_crimeDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="FRI MAR 27 15:13:25 EDT 2015" />
+        android:text="Date" />
+
 
     <CheckBox
         android:id="@+id/crime_solved"
