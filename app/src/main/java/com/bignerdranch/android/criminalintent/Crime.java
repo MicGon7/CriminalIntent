@@ -1,5 +1,7 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.support.annotation.NonNull;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -46,4 +48,5 @@ public class Crime {
     public void setSolved(boolean mSolved) {
         this.mSolved = mSolved;
     }
+
 }
