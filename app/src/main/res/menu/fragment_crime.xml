@@ -5,7 +5,8 @@
         android:id="@+id/remove_crime"
         android:icon="@drawable/ic_menu_remove"
         android:title="@string/new_crime"
-        app:showAsAction="ifRoom|withText"/>
+        app:showAsAction="ifRoom|withText"
+        />
 
 
 </menu>

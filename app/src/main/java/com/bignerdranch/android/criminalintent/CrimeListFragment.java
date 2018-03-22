@@ -38,7 +38,7 @@ public class CrimeListFragment extends Fragment {
     private boolean mSubtitleVisible;
     private TextView mNoCrimesTextView;
     private ImageButton mNoCrimesAddButton;
-    private CrimeLab mCrimeLab = CrimeLab.get(getActivity());
+    private CrimeLab mCrimeLab;
 
 
     //
@@ -57,6 +57,7 @@ public class CrimeListFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_crime_list, container, false);
 
+        mCrimeLab = CrimeLab.get(getActivity());
         mCrimeRecyclerView = view.findViewById(R.id.crime_recycler_view);
 
         // LayoutManager is required or Recycler view will crash.
@@ -96,12 +97,8 @@ public class CrimeListFragment extends Fragment {
         inflater.inflate(R.menu.fragment_crime_list, menu);
         MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
 
+        subtitleItem.setTitle(mSubtitleVisible ? R.string.hide_subtitle : R.string.show_subtitle);
 
-        if (mSubtitleVisible) {
-            subtitleItem.setTitle(R.string.hide_subtitle);
-        } else {
-            subtitleItem.setTitle(R.string.show_subtitle);
-        }
     }
 
     // Respond to selection of the MenuItem by creating a new Crime, adding it to CrimeLab,
