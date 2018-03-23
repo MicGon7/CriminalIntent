@@ -138,7 +138,7 @@ public class CrimeFragment extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.remove_crime:
-                CrimeLab.get(getActivity()).removeCrime(mCrime);
+                CrimeLab.get(getActivity()).deleteCrime(mCrime);
 
                 getActivity().finish();
                 return true;

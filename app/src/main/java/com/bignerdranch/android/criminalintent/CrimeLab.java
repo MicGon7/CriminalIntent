@@ -4,8 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import com.bignerdranch.android.criminalintent.database.CrimeBaseHelper;
+import com.bignerdranch.android.criminalintent.database.CrimeCursorWrapper;
 import com.bignerdranch.android.criminalintent.database.CrimeDbSchema.CrimeTable;
 
 import java.util.ArrayList;
@@ -19,15 +19,12 @@ import java.util.UUID;
 
 public class CrimeLab {
     // Singleton
-   private static CrimeLab sCrimeLab;
-   private Context mContext;
+    private static CrimeLab sCrimeLab;
+    private Context mContext;
 
     // SQLIteOpenHelper is a class designed to get rid of the grunt work of opening
     // a SQLiteDatabase
     private SQLiteDatabase mDatabase;
-
-
-    private List<Crime> mCrimes;
 
     public static CrimeLab get(Context context) {
         if (sCrimeLab == null) {
@@ -38,6 +35,11 @@ public class CrimeLab {
 
     // Load list with temporary crime objects.
     private CrimeLab(Context context) {
+
+        // Store activity context so it will never be cleaned up by the garbage collector
+        // even if the user navigated away from that activity.
+        // This works because CrimeLab is a Singleton so it will be around until the app is shut
+        // down.
         mContext = context.getApplicationContext();
         mDatabase = new CrimeBaseHelper(mContext).getWritableDatabase();
 
@@ -49,19 +51,52 @@ public class CrimeLab {
         mDatabase.insert(CrimeTable.NAME, null, values);
     }
 
-    public void removeCrime(Crime c) {
-        mCrimes.remove(c);
+    public void deleteCrime(Crime c) {
+        String uuidString = c.getId().toString();
+
+        mDatabase.delete(CrimeTable.NAME,
+                CrimeTable.Cols.UUID + " = ?", new String[]{uuidString});
     }
 
+    // Walk the cursor and populate Crime list.
     public List<Crime> getCrimes() {
+        List<Crime> crimes = new ArrayList<>();
 
-        return new ArrayList<>();
+        // Database cursor are called cursors because they always have their finger
+        // on a particular place in a query.
+        CrimeCursorWrapper cursor = queryCrimes(null, null);
+
+        try {
+            cursor.moveToFirst(); // move cursor to the first row.
+            while (!cursor.isAfterLast()) { // if their is a next observation.
+                crimes.add(cursor.getCrime()); // add the crime data at that observation to the list
+                cursor.moveToNext(); // Then move to the next observation.
+            }
+        } finally {
+            cursor.close(); // Close the cursor regardless of try result.
+        }
+
+        return crimes;
     }
 
-    // Inefficient - Challenge 9.2: Improve the performance of the lookup.
     public Crime getCrime(UUID id) {
 
-        return null;
+        CrimeCursorWrapper cursor = queryCrimes(
+                CrimeTable.Cols.UUID + " =?",
+                new String[]{id.toString()}
+
+        );
+
+        try {
+            if (cursor.getCount() == 0) { // if cursor does not have any observations then ABORT!
+                return null;
+            }
+
+            cursor.moveToFirst();
+            return cursor.getCrime();
+        } finally {
+            cursor.close();
+        }
     }
 
     public void updateCrime(Crime crime) {
@@ -69,10 +104,12 @@ public class CrimeLab {
         ContentValues values = getContentValues(crime);
 
         mDatabase.update(CrimeTable.NAME, values,
-                CrimeTable.Cols.UUID + " = ?", new String[] {uuidString});
+                CrimeTable.Cols.UUID + " = ?", new String[]{uuidString});
     }
 
-    private Cursor queryCrimes(String whereClause, String[] whereArgs) {
+    // Use query(...) in a convenience method to call this on your CrimeTable.
+    // Wrap the cursor received from query into a CrimeCursorWrapper.
+    private CrimeCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
                 CrimeTable.NAME,
                 null, // columns - null selects all columns
@@ -83,7 +120,7 @@ public class CrimeLab {
                 null
         );
 
-        return cursor;
+        return new CrimeCursorWrapper(cursor);
     }
 
     private static ContentValues getContentValues(Crime crime) {
@@ -91,7 +128,7 @@ public class CrimeLab {
         values.put(CrimeTable.Cols.UUID, crime.getId().toString());
         values.put(CrimeTable.Cols.TITLE, crime.getTitle());
         values.put(CrimeTable.Cols.DATE, crime.getDate().getTime());
-        values.put(CrimeTable.Cols.SOLVED, crime.isSolved() ? 1: 0);
+        values.put(CrimeTable.Cols.SOLVED, crime.isSolved() ? 1 : 0);
 
         return values;
     }
