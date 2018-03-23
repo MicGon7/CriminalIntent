@@ -66,6 +66,7 @@ public class CrimeListFragment extends Fragment {
 
         mNoCrimesTextView = view.findViewById(R.id.textview_noCrimes);
         mNoCrimesAddButton = view.findViewById(R.id.add_button);
+
         mNoCrimesAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,14 +148,12 @@ public class CrimeListFragment extends Fragment {
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
 
-            // inefficient - reloads all items.
-            // mAdapter.notifyDataSetChanged();
+            // Refresh crimes to display.
+            mAdapter.setCrimes(crimes);
 
-            // efficient - reloads a single item.
             mAdapter.notifyItemChanged(itemPosition);
         }
         handleNoCrimesVisibility();
-
 
         updateSubtitle();
     }
@@ -243,6 +242,9 @@ public class CrimeListFragment extends Fragment {
             return mCrimes.size();
         }
 
+        public void setCrimes(List<Crime> crimes) {
+            mCrimes = crimes;
+        }
 
         // This will get me the index of the current item in Crimes.
         @Override
