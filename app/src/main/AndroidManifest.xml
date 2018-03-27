@@ -20,5 +20,4 @@
             android:parentActivityName=".CrimeListActivity">
         </activity>
     </application>
-
 </manifest>
