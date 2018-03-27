@@ -130,17 +130,6 @@ public class CrimeFragment extends Fragment {
             }
         });
 
-        // TODO Read chapter to figure out what to do with these button events.
-        mSuspectButton = v.findViewById(R.id.button_crimeSuspect);
-        mSuspectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create the implicit intent and pass it into startActivityForResult(...).
-                // Also show suspect name on button.
-
-
-            }
-        });
         mReportButton = v.findViewById(R.id.button_crimeReport);
         mReportButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,14 +160,11 @@ public class CrimeFragment extends Fragment {
 
         final Intent pickContact = new Intent(Intent.ACTION_PICK,
                 ContactsContract.Contacts.CONTENT_URI);
-        //pickContact.addCategory(Intent.CATEGORY_HOME); (test no contact app functionality)
+
         mSuspectButton = v.findViewById(R.id.button_crimeSuspect);
         mSuspectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create the implicit intent and pass it into startActivityForResult(...).
-                // Also show suspect name on button.
-
                 startActivityForResult(pickContact, REQUEST_CONTACT);
 
             }
@@ -194,9 +180,6 @@ public class CrimeFragment extends Fragment {
                 PackageManager.MATCH_DEFAULT_ONLY) == null) {
             mSuspectButton.setEnabled(false);
         }
-
-
-
 
         return v;
 
