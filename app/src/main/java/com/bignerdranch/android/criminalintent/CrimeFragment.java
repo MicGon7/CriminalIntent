@@ -270,7 +270,7 @@ public class CrimeFragment extends Fragment {
             suspect = getString(R.string.crime_report_no_suspect);
         } else {
             //TODO Fix suspect value not showing up.
-            suspect = getString(R.string.crime_report_suspect);
+            suspect = getString(R.string.crime_report_suspect, suspect);
         }
 
         String report = getString(R.string.crime_report,
