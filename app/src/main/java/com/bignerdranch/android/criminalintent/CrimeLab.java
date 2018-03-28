@@ -8,6 +8,7 @@ import com.bignerdranch.android.criminalintent.database.CrimeBaseHelper;
 import com.bignerdranch.android.criminalintent.database.CrimeCursorWrapper;
 import com.bignerdranch.android.criminalintent.database.CrimeDbSchema.CrimeTable;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -84,7 +85,6 @@ public class CrimeLab {
         CrimeCursorWrapper cursor = queryCrimes(
                 CrimeTable.Cols.UUID + " =?",
                 new String[]{id.toString()}
-
         );
 
         try {
@@ -97,6 +97,13 @@ public class CrimeLab {
         } finally {
             cursor.close();
         }
+    }
+
+    // This code does not create any files on the filesystem.
+    // It only returns File objects that point to the right locations.
+    public File getPhotoFile(Crime crime) {
+        File filesDir = mContext.getFilesDir();
+        return new File(filesDir, crime.getPhotoFilename());
     }
 
     public void updateCrime(Crime crime) {
