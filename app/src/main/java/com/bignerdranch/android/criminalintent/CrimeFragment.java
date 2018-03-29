@@ -43,9 +43,10 @@ import java.util.UUID;
 
 
 public class CrimeFragment extends Fragment {
-
+    private static final String TAG = "CriminalIntent";
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogDate";
+    private static final String DIALOG_IMAGE = "DialogImage";
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
     private static final int REQUEST_PHOTO = 2; // Notice the number is incrementing.
@@ -222,6 +223,15 @@ public class CrimeFragment extends Fragment {
         });
 
         mPhotoView = v.findViewById(R.id.crime_photo);
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager = getFragmentManager();
+                ImageZoomFragment dialog = ImageZoomFragment.newInstance(mPhotoFile);
+                dialog.show(manager, DIALOG_IMAGE);
+
+            }
+        });
         updatePhotoView();
 
 
@@ -340,7 +350,7 @@ public class CrimeFragment extends Fragment {
             mPhotoView.setImageBitmap(bitmap);
         }
 
-        // This is a temp solution for samsung devices. Will negatively affect other devices.
+        // This is a temp solution for Samsung devices. Will negatively affect other devices.
         mPhotoView.setRotation(90);
 
     }
