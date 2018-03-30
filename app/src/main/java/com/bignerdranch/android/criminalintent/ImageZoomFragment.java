@@ -1,7 +1,6 @@
 package com.bignerdranch.android.criminalintent;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -45,20 +44,7 @@ public class ImageZoomFragment extends DialogFragment {
 
 
         // Fluent interface for constructing an AlertDialog.Builder.
-        // Retrieves the selected date and calls sendResult().
-        return new AlertDialog.Builder(getActivity(),
-                android.R.style.Theme_Black_NoTitleBar_Fullscreen).setView(v).
-                setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
+        return new AlertDialog.Builder(getActivity()).setView(v)
                 .create();
-
     }
-
-
-
-
 }

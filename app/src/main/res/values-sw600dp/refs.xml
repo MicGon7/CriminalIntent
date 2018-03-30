@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    '<!--' Use this resource on any device whose smallest dimension is 600dp or greater '-->'
+    <item name="activity_masterdetail" type="layout">@layout/activity_twopane</item>
+</resources>

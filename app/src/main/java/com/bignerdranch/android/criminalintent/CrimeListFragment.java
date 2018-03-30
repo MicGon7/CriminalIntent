@@ -1,10 +1,10 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,12 +18,9 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by michaelgonzalez on 2/27/18.
@@ -36,12 +33,26 @@ public class CrimeListFragment extends Fragment {
     private CrimeAdapter mAdapter;
     private int itemPosition;
     private boolean mSubtitleVisible;
+    private Callbacks mCallbacks;
     private TextView mNoCrimesTextView;
     private ImageButton mNoCrimesAddButton;
     private CrimeLab mCrimeLab;
 
+    /**
+     * Required interface for hosting activities.
+     * Gives CrimeListFragment a way to call methods on its hosting activity.
+     */
 
-    //
+    public interface Callbacks {
+        void onCrimeSelected(Crime crime);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +60,6 @@ public class CrimeListFragment extends Fragment {
         // onCreateOptionsMenu.
         setHasOptionsMenu(true);
     }
-
 
     @Nullable
     @Override
@@ -110,8 +120,8 @@ public class CrimeListFragment extends Fragment {
             case R.id.new_crime:
                 Crime crime = new Crime();
                 CrimeLab.get(getActivity()).addCrime(crime);
-                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
-                startActivity(intent);
+                updateUI();
+                mCallbacks.onCrimeSelected(crime);
                 return true;
             case R.id.show_subtitle:
                 mSubtitleVisible = !mSubtitleVisible;
@@ -139,7 +149,7 @@ public class CrimeListFragment extends Fragment {
     }
 
     // Create adapter and pass in list of crimes.
-    private void updateUI() {
+    public void updateUI() {
         List<Crime> crimes = mCrimeLab.getCrimes();
 
         // call notifyDataSetChange() if the CrimeAdapter is already set up.
@@ -205,12 +215,9 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
 
             itemPosition = getAdapterPosition();
-
-
-            startActivity(intent);
+            mCallbacks.onCrimeSelected(mCrime);
         }
 
 
@@ -261,4 +268,11 @@ public class CrimeListFragment extends Fragment {
         // Save subtitle visibility state across rotation.
         outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible);
     }
+
+    @Override
+    public void onDetach(){
+        super.onDetach();
+        mCallbacks = null;
+    }
+
 }

@@ -2,6 +2,7 @@ package com.bignerdranch.android.criminalintent;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -19,12 +20,14 @@ import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -61,6 +64,15 @@ public class CrimeFragment extends Fragment {
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
 
+    private Callbacks mCallbacks;
+
+    /**
+     * Required interface for hosting activities
+     */
+
+    public interface Callbacks {
+        void onCrimeUpdated(Crime crime);
+    }
 
     /* CrimeActivity will call this method when it needs to create a CrimeFragment, passing
        in the UUID it retrieved from its extra.
@@ -73,6 +85,11 @@ public class CrimeFragment extends Fragment {
         fragment.setArguments(args);
 
         return fragment;
+    }
+
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
     }
 
     @Override
@@ -94,6 +111,12 @@ public class CrimeFragment extends Fragment {
         CrimeLab.get(getActivity()).updateCrime(mCrime);
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -111,6 +134,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mCrime.setTitle(s.toString());
+                updateCrime();
             }
 
             @Override
@@ -140,6 +164,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCrime.setSolved(isChecked);
+                updateCrime();
             }
         });
 
@@ -200,6 +225,7 @@ public class CrimeFragment extends Fragment {
 
         boolean canTakePhoto = mPhotoFile != null &&
                 captureImage.resolveActivity(packageManager) != null;
+
         mPhotoButton.setEnabled(canTakePhoto);
 
         mPhotoButton.setOnClickListener(new View.OnClickListener() {
@@ -222,6 +248,8 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+
+
         mPhotoView = v.findViewById(R.id.crime_photo);
         mPhotoView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -232,7 +260,16 @@ public class CrimeFragment extends Fragment {
 
             }
         });
-        updatePhotoView();
+
+        ViewTreeObserver observer = mPhotoView.getViewTreeObserver();
+
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Log.d(TAG, "PHOTOVIEW LOADED");
+                updatePhotoView();
+            }
+        });
 
 
         return v;
@@ -271,6 +308,7 @@ public class CrimeFragment extends Fragment {
         if (requestCode == REQUEST_DATE) {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
+            updateCrime();
             updateDate();
 
         } else if (requestCode == REQUEST_CONTACT && data != null) {
@@ -296,6 +334,7 @@ public class CrimeFragment extends Fragment {
                 c.moveToFirst();
                 String suspect = c.getString(0);
                 mCrime.setSuspect(suspect);
+                updateCrime();
                 mSuspectButton.setText(suspect);
             } finally {
                 c.close();
@@ -305,10 +344,15 @@ public class CrimeFragment extends Fragment {
                     "com.bignerdranch.android.criminalintent.fileprovider",
                     mPhotoFile);
             getActivity().revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
+            updateCrime();
             updatePhotoView();
         }
 
+    }
+
+    private void updateCrime() {
+        CrimeLab.get(getActivity()).updateCrime(mCrime);
+        mCallbacks.onCrimeUpdated(mCrime);
     }
 
     private void updateDate() {
@@ -351,7 +395,7 @@ public class CrimeFragment extends Fragment {
         }
 
         // This is a temp solution for Samsung devices. Will negatively affect other devices.
-        mPhotoView.setRotation(90);
+        //mPhotoView.setRotation(90);
 
     }
 }
