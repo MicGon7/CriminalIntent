@@ -40,8 +40,9 @@ public class PictureUtils {
     // Scale a Bitmap for a particular Activity's size.
     public static Bitmap getScaledBitmap(String path, Activity activity) {
         Point size = new Point();
-        activity.getWindowManager().getDefaultDisplay().getSize(size);
-
+        if(activity != null) {
+            activity.getWindowManager().getDefaultDisplay().getSize(size);
+        }
 
         return getScaledBitmap(path, size.x, size.y);
     }
