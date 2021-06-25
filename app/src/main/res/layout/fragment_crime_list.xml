@@ -13,8 +13,6 @@
 
     </android.support.v7.widget.RecyclerView>
 
-
-
     <TextView
         android:id="@+id/textview_noCrimes"
         android:layout_width="wrap_content"
@@ -32,7 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_menu_add"
-        android:tint="@android:color/holo_red_dark"
+        android:tint="@android:color/holo_green_light"
+        android:background="@android:color/holo_orange_dark"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="parent"
